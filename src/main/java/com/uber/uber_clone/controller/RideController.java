@@ -19,4 +19,21 @@ public class RideController {
     public Ride requestRide(@RequestBody RideRequestDTO requestDTO) {
         return rideService.requestRide(requestDTO);
     }
+
+    @PostMapping("/accept/{rideId}")
+    public Ride acceptRide(@PathVariable Long rideId) {
+        return rideService.acceptRide(rideId);
+    }
+    @PostMapping("/start/{rideId}")
+    public Ride startRide(@PathVariable Long rideId) {
+        return rideService.startRide(rideId);
+    }
+    @PostMapping("/complete/{rideId}")
+    public Ride completeRide(@PathVariable Long rideId) {
+        return rideService.completeRide(rideId);
+    }
+    @GetMapping("/")
+    public String home() {
+        return "Uber Backend Running";
+    }
 }

@@ -54,4 +54,60 @@ public class RideService {
         // 5. Save Ride
         return rideRepository.save(ride);
     }
+    //DAY 6
+    public Ride acceptRide(Long rideId) {
+        // 1. Find ride
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found"));
+
+        // 2. Check current status
+        if (ride.getStatus() != RideStatus.REQUESTED) {
+            throw new RuntimeException("Ride cannot be accepted. Current status: " + ride.getStatus());
+        }
+
+        // 3. Update status
+        ride.setStatus(RideStatus.ACCEPTED);
+
+        // 4. Save and return
+        return rideRepository.save(ride);
+    }
+    public Ride startRide(Long rideId) {
+        // 1. Find ride
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found"));
+
+        // 2. Check current status
+        if (ride.getStatus() != RideStatus.ACCEPTED) {
+            throw new RuntimeException("Ride cannot be STARTED. Current status: " + ride.getStatus());
+        }
+
+        // 3. Update status
+        ride.setStatus(RideStatus.STARTED);
+
+        // 5. Save and return
+        return rideRepository.save(ride);
+    }
+
+    public Ride completeRide(Long rideId) {
+        // 1. Find ride
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found"));
+
+        // 2. Check current status
+        if (ride.getStatus() != RideStatus.STARTED) {
+            throw new RuntimeException("Ride cannot be COMPLETED. Current status: " + ride.getStatus());
+        }
+
+        // 3. Update status
+        ride.setStatus(RideStatus.COMPLETED);
+
+        // 4. Make driver available again
+        Driver driver = ride.getDriver();
+        driver.setAvailable(true);
+        driverRepository.save(driver);
+        
+        // 5. Save and return
+        return rideRepository.save(ride);
+    }
+
 }
