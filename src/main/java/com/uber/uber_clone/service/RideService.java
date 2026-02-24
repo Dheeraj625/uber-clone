@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import java.util.List;
+
 @Service
+
 public class RideService {
 
     private final RideRepository rideRepository;
@@ -108,6 +111,33 @@ public class RideService {
         
         // 5. Save and return
         return rideRepository.save(ride);
+    }
+    public List<Ride> getRidesByRider(Long riderId) {
+
+        User rider = userRepository.findById(riderId)
+            .orElseThrow(() -> new RuntimeException("Rider not found"));
+
+        return rideRepository.findByRider(rider);
+    }
+
+    public List<Ride> getRidesByDriver(Long userId) {
+
+        // Step 1: Find user
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Step 2: Find driver using user
+        Driver driver = driverRepository.findByUser(user)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        // Step 3: Fetch rides
+        return rideRepository.findByDriver(driver);
+    }
+
+    public Ride getRideById(Long rideId) {
+
+        return rideRepository.findById(rideId)
+            .orElseThrow(() -> new RuntimeException("Ride not found"));
     }
 
 }

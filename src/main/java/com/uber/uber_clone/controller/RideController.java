@@ -3,6 +3,9 @@ package com.uber.uber_clone.controller;
 import com.uber.uber_clone.dto.RideRequestDTO;
 import com.uber.uber_clone.entity.Ride;
 import com.uber.uber_clone.service.RideService;
+
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,5 +38,19 @@ public class RideController {
     @GetMapping("/")
     public String home() {
         return "Uber Backend Running";
+    }
+    @GetMapping("/rider/{riderId}")
+    public List<Ride> getRiderHistory(@PathVariable Long riderId) {
+        return rideService.getRidesByRider(riderId);
+    }
+
+    @GetMapping("/driver/{userId}")
+    public List<Ride> getDriverHistory(@PathVariable Long userId) {
+        return rideService.getRidesByDriver(userId);
+    }
+
+    @GetMapping("/{rideId}")
+    public Ride getRide(@PathVariable Long rideId) {
+        return rideService.getRideById(rideId);
     }
 }
