@@ -1,6 +1,9 @@
 package com.uber.uber_clone.service;
 
+import com.uber.uber_clone.dto.DriverResponseDTO;
 import com.uber.uber_clone.dto.RideRequestDTO;
+import com.uber.uber_clone.dto.RideResponseDTO;
+import com.uber.uber_clone.dto.UserResponseDTO;
 import com.uber.uber_clone.entity.*;
 import com.uber.uber_clone.repository.DriverRepository;
 import com.uber.uber_clone.repository.RideRepository;
@@ -49,6 +52,15 @@ public class RideService {
         ride.setPickupLocation(requestDTO.getPickupLocation());
         ride.setDropLocation(requestDTO.getDropLocation());
         ride.setStatus(RideStatus.REQUESTED);
+
+        // ===== ADD FARE LOGIC HERE =====
+        double baseFare = 50;
+        double distanceFactor =
+            requestDTO.getPickupLocation().length() +
+            requestDTO.getDropLocation().length();
+
+        double fare = baseFare + distanceFactor;
+        ride.setFare(fare);
 
         // 4. Mark Driver Busy
         driver.setAvailable(false);
@@ -138,6 +150,30 @@ public class RideService {
 
         return rideRepository.findById(rideId)
             .orElseThrow(() -> new RuntimeException("Ride not found"));
+    }
+    public RideResponseDTO convertToDTO(Ride ride) {
+
+        User rider = ride.getRider();
+        UserResponseDTO riderDTO =
+            new UserResponseDTO(rider.getId(), rider.getName(), rider.getEmail(), rider.getRole().name());
+
+        Driver driver = ride.getDriver();
+        User driverUser = driver.getUser();
+        UserResponseDTO driverUserDTO =
+            new UserResponseDTO(driverUser.getId(), driverUser.getName(), driverUser.getEmail(), driverUser.getRole().name());
+
+        DriverResponseDTO driverDTO =
+            new DriverResponseDTO(driver.getId(), driverUserDTO, driver.getVehicleNumber(), driver.isAvailable());
+
+        return new RideResponseDTO(
+            ride.getId(),
+            ride.getPickupLocation(),
+            ride.getDropLocation(),
+            ride.getStatus().name(),
+            ride.getFare(),
+            riderDTO,
+            driverDTO
+        );
     }
 
 }

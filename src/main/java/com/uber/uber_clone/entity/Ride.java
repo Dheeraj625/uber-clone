@@ -9,6 +9,8 @@ public class Ride {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private double fare;
+
     // Rider (User)
     @ManyToOne
     @JoinColumn(name = "rider_id")
@@ -80,5 +82,13 @@ public class Ride {
 
     public void setStatus(RideStatus status) {
         this.status = status;
+    }
+    //day 8
+    public double getFare() {
+        return fare;
+    }
+
+    public void setFare(double fare) {
+        this.fare = fare;
     }
 }

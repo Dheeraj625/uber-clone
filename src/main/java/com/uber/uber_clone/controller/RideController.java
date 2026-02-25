@@ -1,6 +1,7 @@
 package com.uber.uber_clone.controller;
 
 import com.uber.uber_clone.dto.RideRequestDTO;
+import com.uber.uber_clone.dto.RideResponseDTO;
 import com.uber.uber_clone.entity.Ride;
 import com.uber.uber_clone.service.RideService;
 
@@ -50,7 +51,11 @@ public class RideController {
     }
 
     @GetMapping("/{rideId}")
-    public Ride getRide(@PathVariable Long rideId) {
+    /*public Ride getRide(@PathVariable Long rideId) {
         return rideService.getRideById(rideId);
+    }*/
+    public RideResponseDTO getRide(@PathVariable Long rideId) {
+        Ride ride = rideService.getRideById(rideId);
+        return rideService.convertToDTO(ride);
     }
 }
