@@ -1,6 +1,7 @@
 package com.uber.uber_clone.controller;
 
 import com.uber.uber_clone.dto.CreateDriverRequest;
+import com.uber.uber_clone.dto.UpdateDriverLocationRequest;
 import com.uber.uber_clone.entity.Driver;
 import com.uber.uber_clone.service.DriverService;
 import org.springframework.web.bind.annotation.*;
@@ -24,5 +25,17 @@ public class DriverController {
     public Driver setAvailability(@RequestParam Long userId,
                                   @RequestParam boolean available) {
         return driverService.setAvailability(userId, available);
+    }
+
+    @PutMapping("/{driverId}/location")
+    public Driver updateLocation(
+        @PathVariable Long driverId,
+        @RequestBody UpdateDriverLocationRequest request) {
+
+        return driverService.updateDriverLocation(
+            driverId,
+            request.getLatitude(),
+            request.getLongitude()
+        );
     }
 }

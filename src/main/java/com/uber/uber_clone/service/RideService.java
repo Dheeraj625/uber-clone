@@ -51,6 +51,13 @@ public class RideService {
         ride.setDriver(driver);
         ride.setPickupLocation(requestDTO.getPickupLocation());
         ride.setDropLocation(requestDTO.getDropLocation());
+
+        // ===== Day 9: Save Coordinates =====
+    ride.setPickupLatitude(requestDTO.getPickupLatitude());
+    ride.setPickupLongitude(requestDTO.getPickupLongitude());
+    ride.setDropLatitude(requestDTO.getDropLatitude());
+    ride.setDropLongitude(requestDTO.getDropLongitude());
+
         ride.setStatus(RideStatus.REQUESTED);
 
         // ===== ADD FARE LOGIC HERE =====

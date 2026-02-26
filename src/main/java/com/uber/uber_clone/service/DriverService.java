@@ -44,4 +44,14 @@ public class DriverService {
 
         return driverRepository.save(driver);
     }
+    //day 9 came from driver controller 
+    public Driver updateDriverLocation(Long driverId, Double lat, Double lon) {
+        Driver driver = driverRepository.findById(driverId)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        driver.setCurrentLatitude(lat);
+        driver.setCurrentLongitude(lon);
+
+        return driverRepository.save(driver);
+    }
 }

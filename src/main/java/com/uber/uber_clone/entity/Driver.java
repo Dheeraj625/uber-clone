@@ -21,4 +21,9 @@ public class Driver {
     private String vehicleNumber;
 
     private boolean available;
+
+    // NEW FIELDS
+    private Double currentLatitude;
+    private Double currentLongitude;
+    
 }

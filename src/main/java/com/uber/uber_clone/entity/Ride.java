@@ -24,6 +24,13 @@ public class Ride {
     private String pickupLocation;
     private String dropLocation;
 
+    // NEW COORDINATES day 9
+    private Double pickupLatitude;
+    private Double pickupLongitude;
+
+    private Double dropLatitude;
+    private Double dropLongitude;
+
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
@@ -90,5 +97,38 @@ public class Ride {
 
     public void setFare(double fare) {
         this.fare = fare;
+    } 
+    //day 9
+
+    public Double getPickupLatitude() {
+    return pickupLatitude;
+    }
+
+    public void setPickupLatitude(Double pickupLatitude) {
+    this.pickupLatitude = pickupLatitude;
+    }
+
+    public Double getPickupLongitude() {
+    return pickupLongitude;
+    }
+
+    public void setPickupLongitude(Double pickupLongitude) {
+    this.pickupLongitude = pickupLongitude;
+    }
+
+    public Double getDropLatitude() {
+    return dropLatitude;
+    }
+
+    public void setDropLatitude(Double dropLatitude) {
+    this.dropLatitude = dropLatitude;
+    }
+
+    public Double getDropLongitude() {
+    return dropLongitude;
+    }
+
+    public void setDropLongitude(Double dropLongitude) {
+    this.dropLongitude = dropLongitude;
     }
 }
