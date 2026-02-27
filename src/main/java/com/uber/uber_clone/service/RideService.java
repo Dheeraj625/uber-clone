@@ -8,6 +8,12 @@ import com.uber.uber_clone.entity.*;
 import com.uber.uber_clone.repository.DriverRepository;
 import com.uber.uber_clone.repository.RideRepository;
 import com.uber.uber_clone.repository.UserRepository;
+import com.uber.uber_clone.utility.DistanceUtil;
+//day 10
+import jakarta.annotation.PostConstruct;
+import java.util.List;
+import com.uber.uber_clone.utility.DistanceUtil;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -39,11 +45,66 @@ public class RideService {
         }
         User rider = riderOptional.get();
 
-        // 2. Find Available Driver
+        /*  2. Find Available Driver
         Driver driver = driverRepository.findFirstByAvailableTrue();
         if (driver == null) {
             throw new RuntimeException("No drivers available");
+        }*/
+        List<Driver> availableDrivers = driverRepository.findByAvailableTrue();
+
+        if (availableDrivers.isEmpty()) {
+            throw new RuntimeException("No drivers available");
         }
+
+    Driver nearestDriver = null;
+    double minDistance = Double.MAX_VALUE;
+
+    /*for (Driver d : availableDrivers) {
+
+        double distance = DistanceUtil.calculateDistance(
+            d.getCurrentLatitude(),
+            d.getCurrentLongitude(),
+            requestDTO.getPickupLatitude(),
+            requestDTO.getPickupLongitude()
+        );
+
+        if (distance < minDistance) {
+        minDistance = distance;
+        nearestDriver = d;
+        }
+    }*/
+    double searchRadiusKm = 5;   // Only drivers within 5 km
+
+    for (Driver d : availableDrivers) {
+        // Skip drivers without location
+    if (d.getCurrentLatitude() == null || d.getCurrentLongitude() == null) {
+        continue;
+    }
+
+    double distance = DistanceUtil.calculateDistance(
+        d.getCurrentLatitude(),
+        d.getCurrentLongitude(),
+        requestDTO.getPickupLatitude(),
+        requestDTO.getPickupLongitude()
+    );
+
+    // Ignore far drivers
+    if (distance > searchRadiusKm) {
+        continue;
+    }
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            nearestDriver = d;
+        }
+    }
+    if (nearestDriver == null) {
+        throw new RuntimeException("No drivers available nearby");
+    }
+
+    Driver driver = nearestDriver;
+    System.out.println("Nearest Driver ID = " + driver.getId());
+    System.out.println("Distance = " + minDistance + " km");
 
         // 3. Create Ride
         Ride ride = new Ride();
@@ -53,21 +114,32 @@ public class RideService {
         ride.setDropLocation(requestDTO.getDropLocation());
 
         // ===== Day 9: Save Coordinates =====
-    ride.setPickupLatitude(requestDTO.getPickupLatitude());
-    ride.setPickupLongitude(requestDTO.getPickupLongitude());
-    ride.setDropLatitude(requestDTO.getDropLatitude());
-    ride.setDropLongitude(requestDTO.getDropLongitude());
+        ride.setPickupLatitude(requestDTO.getPickupLatitude());
+        ride.setPickupLongitude(requestDTO.getPickupLongitude());
+        ride.setDropLatitude(requestDTO.getDropLatitude());
+        ride.setDropLongitude(requestDTO.getDropLongitude());
 
         ride.setStatus(RideStatus.REQUESTED);
 
         // ===== ADD FARE LOGIC HERE =====
-        double baseFare = 50;
-        double distanceFactor =
-            requestDTO.getPickupLocation().length() +
-            requestDTO.getDropLocation().length();
+        // ===== Day 10: Distance-based Fare =====
+        double tripDistance = DistanceUtil.calculateDistance(
+            requestDTO.getPickupLatitude(),
+            requestDTO.getPickupLongitude(),
+            requestDTO.getDropLatitude(),
+            requestDTO.getDropLongitude()
+        );
 
-        double fare = baseFare + distanceFactor;
+        double baseFare = 50;          // fixed charge
+        double perKmRate = 12;         // ₹ per km
+
+        double fare = baseFare + (tripDistance * perKmRate);
         ride.setFare(fare);
+
+        // Debug (optional)
+        System.out.println("Trip Distance = " + tripDistance + " km");
+        System.out.println("Calculated Fare = ₹" + fare);
+
 
         // 4. Mark Driver Busy
         driver.setAvailable(false);
@@ -182,5 +254,12 @@ public class RideService {
             driverDTO
         );
     }
-
+    @PostConstruct
+    public void testDistance() {
+    double distance = DistanceUtil.calculateDistance(
+            22.7196, 75.8577,
+            23.2599, 77.4126
+        );
+        System.out.println("Distance Test = " + distance);
+    }
 }

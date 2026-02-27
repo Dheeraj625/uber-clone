@@ -2,6 +2,8 @@ package com.uber.uber_clone.service;
 
 import com.uber.uber_clone.entity.User;
 import com.uber.uber_clone.repository.UserRepository;
+import com.uber.uber_clone.utility.DistanceUtil;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

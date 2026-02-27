@@ -36,7 +36,7 @@ public class RideController {
     public Ride completeRide(@PathVariable Long rideId) {
         return rideService.completeRide(rideId);
     }
-    @GetMapping("/")
+    @GetMapping  //("/")
     public String home() {
         return "Uber Backend Running";
     }
