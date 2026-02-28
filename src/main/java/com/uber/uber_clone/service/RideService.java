@@ -51,6 +51,7 @@ public class RideService {
             throw new RuntimeException("No drivers available");
         }*/
         List<Driver> availableDrivers = driverRepository.findByAvailableTrue();
+        System.out.println("Available drivers count = " + availableDrivers.size());
 
         if (availableDrivers.isEmpty()) {
             throw new RuntimeException("No drivers available");
@@ -73,7 +74,7 @@ public class RideService {
         nearestDriver = d;
         }
     }*/
-    double searchRadiusKm = 5;   // Only drivers within 5 km
+    double searchRadiusKm = 50;   // Only drivers within 5 km
 
     for (Driver d : availableDrivers) {
         // Skip drivers without location
@@ -110,8 +111,16 @@ public class RideService {
         Ride ride = new Ride();
         ride.setRider(rider);
         ride.setDriver(driver);
-        ride.setPickupLocation(requestDTO.getPickupLocation());
-        ride.setDropLocation(requestDTO.getDropLocation());
+        //ride.setPickupLocation(requestDTO.getPickupLocation());
+        //ride.setDropLocation(requestDTO.getDropLocation());
+        //day 11 change 
+        ride.setPickupLocation(
+            requestDTO.getPickupLatitude() + ", " + requestDTO.getPickupLongitude()
+        );
+
+        ride.setDropLocation(
+            requestDTO.getDropLatitude() + ", " + requestDTO.getDropLongitude()
+        );
 
         // ===== Day 9: Save Coordinates =====
         ride.setPickupLatitude(requestDTO.getPickupLatitude());
@@ -146,7 +155,13 @@ public class RideService {
         driverRepository.save(driver);
 
         // 5. Save Ride
-        return rideRepository.save(ride);
+        System.out.println("Before saving ride");
+
+        Ride savedRide = rideRepository.save(ride);
+
+        System.out.println("After saving ride");
+
+        return savedRide;
     }
     //DAY 6
     public Ride acceptRide(Long rideId) {

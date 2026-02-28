@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rider Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand">Uber Clone - Rider</span>
+        <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div class="container dashboard-container">
+
+    <div class="row justify-content-center">
+
+        <!-- Ride Request Card -->
+        <div class="col-md-6">
+            <div class="card shadow p-4">
+
+                <h4 class="text-center mb-3">Request a Ride</h4>
+
+                <input id="pickupLatitude" class="form-control mb-2" placeholder="Pickup Latitude">
+                <input id="pickupLongitude" class="form-control mb-2" placeholder="Pickup Longitude">
+                <input id="dropLatitude" class="form-control mb-2" placeholder="Drop Latitude">
+                <input id="dropLongitude" class="form-control mb-3" placeholder="Drop Longitude">
+
+                <button class="btn btn-primary w-100" onclick="requestRide()">
+                    Request Ride
+                </button>
+
+            </div>
+
+            <!-- Status Card -->
+            <div class="card shadow p-3 mt-3 text-center">
+                <div class="status-box">
+                    Status: <span id="status">None</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="/js/rider.js"></script>
+
+<script>
+function logout(){
+    localStorage.clear();
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

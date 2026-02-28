@@ -1,0 +1,21 @@
+body {
+    background-color: #f5f6fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.dashboard-container {
+    margin-top: 40px;
+}
+
+.status-box {
+    font-size: 18px;
+    font-weight: bold;
+}
