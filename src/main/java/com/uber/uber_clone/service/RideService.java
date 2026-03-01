@@ -14,11 +14,13 @@ import jakarta.annotation.PostConstruct;
 import java.util.List;
 import com.uber.uber_clone.utility.DistanceUtil;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 import java.util.List;
+
 
 @Service
 
@@ -277,4 +279,5 @@ public class RideService {
         );
         System.out.println("Distance Test = " + distance);
     }
+
 }

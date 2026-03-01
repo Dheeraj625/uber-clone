@@ -4,6 +4,7 @@
     <title>Rider Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
 
@@ -30,6 +31,8 @@
                 <input id="dropLatitude" class="form-control mb-2" placeholder="Drop Latitude">
                 <input id="dropLongitude" class="form-control mb-3" placeholder="Drop Longitude">
 
+                <div id="map" style="height: 350px; margin-bottom: 15px;"></div>
+
                 <button class="btn btn-primary w-100" onclick="requestRide()">
                     Request Ride
                 </button>
@@ -38,9 +41,7 @@
 
             <!-- Status Card -->
             <div class="card shadow p-3 mt-3 text-center">
-                <div class="status-box">
-                    Status: <span id="status">None</span>
-                </div>
+                Status: <span id="status">None</span>
             </div>
 
         </div>
@@ -56,6 +57,103 @@ function logout(){
     localStorage.clear();
     window.location.href = "index.html";
 }
+</script>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+/* =========================
+   MAP INITIALIZATION
+========================= */
+var map = L.map('map').setView([23.2599, 77.4126], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+
+/* =========================
+   PICKUP & DROP SELECTION
+========================= */
+let pickupMarker = null;
+let dropMarker = null;
+let clickCount = 0;
+
+map.on('click', function(e) {
+
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+
+    if (clickCount === 0) {
+        // Pickup
+        document.getElementById("pickupLatitude").value = lat;
+        document.getElementById("pickupLongitude").value = lng;
+
+        if (pickupMarker) map.removeLayer(pickupMarker);
+
+        pickupMarker = L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup("Pickup Location")
+            .openPopup();
+
+        clickCount = 1;
+
+    } else {
+        // Drop
+        document.getElementById("dropLatitude").value = lat;
+        document.getElementById("dropLongitude").value = lng;
+
+        if (dropMarker) map.removeLayer(dropMarker);
+
+        dropMarker = L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup("Drop Location")
+            .openPopup();
+
+        clickCount = 0;
+    }
+});
+
+
+/* =========================
+   LIVE DRIVER MARKERS
+========================= */
+let driverMarkers = [];
+
+function loadNearbyDrivers() {
+
+    const lat = document.getElementById("pickupLatitude").value;
+    const lng = document.getElementById("pickupLongitude").value;
+
+    if (!lat || !lng) return;
+
+    fetch(`http://localhost:8080/driver/nearby?lat=${lat}&lng=${lng}&radiusKm=15`)
+        .then(res => res.json())
+        .then(drivers => {
+
+            // Remove old markers
+            driverMarkers.forEach(marker => map.removeLayer(marker));
+            driverMarkers = [];
+
+            // Add new driver markers
+            drivers.forEach(driver => {
+                const marker = L.marker([
+                    driver.currentLatitude,
+                    driver.currentLongitude
+                ])
+                .addTo(map)
+                .bindPopup("Driver ID: " + driver.id);
+
+                driverMarkers.push(marker);
+            });
+        })
+        .catch(err => console.error("Driver fetch error:", err));
+}
+
+// Refresh every 5 seconds
+setInterval(loadNearbyDrivers, 5000);
+
 </script>
 
 </body>

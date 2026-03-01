@@ -4,6 +4,9 @@ import com.uber.uber_clone.dto.CreateDriverRequest;
 import com.uber.uber_clone.dto.UpdateDriverLocationRequest;
 import com.uber.uber_clone.entity.Driver;
 import com.uber.uber_clone.service.DriverService;
+
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,5 +40,18 @@ public class DriverController {
             request.getLatitude(),
             request.getLongitude()
         );
+    }
+    @GetMapping("/by-user/{userId}")
+    public Driver getDriverByUserId(@PathVariable Long userId) {
+        return driverService.getDriverByUserId(userId);
+    }
+
+    @GetMapping("/nearby")
+    public List<Driver> getNearbyDrivers(
+        @RequestParam double lat,
+        @RequestParam double lng,
+        @RequestParam double radiusKm) {
+
+    return driverService.findNearbyDrivers(lat, lng, radiusKm);
     }
 }
