@@ -36,6 +36,10 @@ public class RideController {
     public Ride completeRide(@PathVariable Long rideId) {
         return rideService.completeRide(rideId);
     }
+    @PostMapping("/cancel/{rideId}")
+        public Ride cancelRide(@PathVariable Long rideId) {
+        return rideService.cancelRide(rideId);
+    }
     @GetMapping  //("/")
     public String home() {
         return "Uber Backend Running";

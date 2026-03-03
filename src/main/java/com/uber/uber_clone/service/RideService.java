@@ -279,5 +279,25 @@ public class RideService {
         );
         System.out.println("Distance Test = " + distance);
     }
+    //cancel ride
+    public Ride cancelRide(Long rideId) {
 
+    Ride ride = rideRepository.findById(rideId)
+            .orElseThrow(() -> new RuntimeException("Ride not found"));
+
+    // Only allow cancel if not already completed
+    if (ride.getStatus() == RideStatus.COMPLETED) {
+        throw new RuntimeException("Cannot cancel completed ride");
+    }
+
+    ride.setStatus(RideStatus.CANCELLED);
+
+    // Make driver available again
+    if (ride.getDriver() != null) {
+        ride.getDriver().setAvailable(true);
+        driverRepository.save(ride.getDriver());
+    }
+
+    return rideRepository.save(ride);
+    }
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Rider Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -33,15 +34,28 @@
 
                 <div id="map" style="height: 350px; margin-bottom: 15px;"></div>
 
-                <button class="btn btn-primary w-100" onclick="requestRide()">
+                <div id="loadingSpinner" class="text-center mb-2" style="display:none;">
+                    Finding driver...
+                </div>
+
+                <button id="requestBtn" class="btn btn-primary w-100" onclick="requestRide()">
                     Request Ride
+                </button>
+                <button id="cancelBtn" class="btn btn-danger w-100 mt-2"
+                    onclick="cancelRide()" disabled>
+                    Cancel Ride
                 </button>
 
             </div>
 
             <!-- Status Card -->
             <div class="card shadow p-3 mt-3 text-center">
-                Status: <span id="status">None</span>
+                <div id="rideDetails">
+                    <p><strong>Status:</strong> <span id="rideStatus">None</span></p>
+                    <p><strong>Driver:</strong> <span id="driverName">-</span></p>
+                    <p><strong>Vehicle:</strong> <span id="vehicleNumber">-</span></p>
+                    <p><strong>Estimated Fare:</strong> <span id="fareAmount">-</span></p>
+                </div>
             </div>
 
         </div>
@@ -74,19 +88,51 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 
 /* =========================
-   PICKUP & DROP SELECTION
+   SMART PICKUP + DROP
 ========================= */
+
 let pickupMarker = null;
 let dropMarker = null;
-let clickCount = 0;
+let pickupSet = false;
 
+// Try to get live location
+if (navigator.geolocation) {
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            map.setView([lat, lng], 15);
+
+            document.getElementById("pickupLatitude").value = lat;
+            document.getElementById("pickupLongitude").value = lng;
+
+            pickupMarker = L.marker([lat, lng])
+                .addTo(map)
+                .bindPopup("Your Current Location")
+                .openPopup();
+
+            pickupSet = true; // IMPORTANT
+        },
+        function(error) {
+            console.log("Location permission denied.");
+            alert("Location not enabled. Click map to select pickup.");
+        }
+    );
+
+}
+
+// Map click logic
 map.on('click', function(e) {
 
-    var lat = e.latlng.lat;
-    var lng = e.latlng.lng;
+    const lat = e.latlng.lat;
+    const lng = e.latlng.lng;
 
-    if (clickCount === 0) {
-        // Pickup
+    // If pickup not set yet → set pickup
+    if (!pickupSet) {
+
         document.getElementById("pickupLatitude").value = lat;
         document.getElementById("pickupLongitude").value = lng;
 
@@ -97,24 +143,24 @@ map.on('click', function(e) {
             .bindPopup("Pickup Location")
             .openPopup();
 
-        clickCount = 1;
+        pickupSet = true;
 
     } else {
-        // Drop
+
+        // Otherwise set drop
         document.getElementById("dropLatitude").value = lat;
         document.getElementById("dropLongitude").value = lng;
 
-        if (dropMarker) map.removeLayer(dropMarker);
-
-        dropMarker = L.marker([lat, lng])
-            .addTo(map)
-            .bindPopup("Drop Location")
-            .openPopup();
-
-        clickCount = 0;
+        if (dropMarker) {
+            dropMarker.setLatLng([lat, lng]);
+        } else {
+            dropMarker = L.marker([lat, lng])
+                .addTo(map)
+                .bindPopup("Drop Location")
+                .openPopup();
+        }
     }
 });
-
 
 /* =========================
    LIVE DRIVER MARKERS
