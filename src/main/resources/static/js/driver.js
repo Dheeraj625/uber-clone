@@ -1,4 +1,10 @@
-const BASE_URL = "http://localhost:8080";
+//const BASE_URL = "http://localhost:8080";
+//const BASE_URL = "http://192.168.29.7:8080";
+const BASE_URL = "http://10.50.21.250:8080";
+
+const driverId = localStorage.getItem("driverId");
+let trackingInterval = null;
+console.log("Driver ID:", driverId);
 
 // Go Online / Offline
 function setAvailable(status) {
@@ -48,6 +54,12 @@ function startTracking() {
         alert("Geolocation not supported");
         return;
     }
+    if (!driverId) {
+        alert("Driver not logged in");
+        return;
+    }
+
+    console.log("Starting live tracking for driver:", driverId);
 
     navigator.geolocation.watchPosition(
         function(position) {
@@ -67,7 +79,14 @@ function startTracking() {
                     latitude: latitude,
                     longitude: longitude
                 })
-            });
+            }).then(res => {
+                if (!res.ok) throw new Error("Location update failed");
+                return res.json();
+            })
+            .then(data => {
+                console.log("Location updated in backend");
+            })
+            .catch(err => console.error(err));
         },
         function(error) {
             console.error("Location error:", error);
