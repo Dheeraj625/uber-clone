@@ -89,4 +89,9 @@ public class DriverService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         return R * c;
     }
+    //day 16
+    public Driver getDriverLocation(Long driverId) {
+        return driverRepository.findById(driverId)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+    }
 }

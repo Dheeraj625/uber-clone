@@ -1,7 +1,7 @@
 console.log("RIDER JS LOADED");
 //const BASE_URL = "http://localhost:8080";
-//const BASE_URL = "http://192.168.29.7:8080";
-const BASE_URL = "http://10.50.21.250:8080";
+const BASE_URL = "http://192.168.29.7:8080";
+//const BASE_URL = "http://10.50.21.250:8080";
 
 let currentRideId = null;
 let ridePollingInterval = null;
@@ -66,6 +66,9 @@ function requestRide() {
 
         document.getElementById("fareAmount").innerText =
             data.fare ? "₹" + data.fare.toFixed(2) : "-";
+        if (data.driver) {
+            startDriverTracking(data.driver.id);
+        }
     })
     .catch(err => {
         console.error("Ride request failed:", err);

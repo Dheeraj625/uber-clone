@@ -30,6 +30,11 @@ public class DriverController {
         return driverService.setAvailability(userId, available);
     }
 
+    //day 16
+    @GetMapping("/{driverId}/location")
+    public Driver getDriverLocation(@PathVariable Long driverId) {
+        return driverService.getDriverLocation(driverId);
+    }
     @PutMapping("/{driverId}/location")
     public Driver updateLocation(
         @PathVariable Long driverId,

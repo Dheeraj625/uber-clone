@@ -166,6 +166,8 @@ map.on('click', function(e) {
    LIVE DRIVER MARKERS
 ========================= */
 let driverMarkers = [];
+let assignedDriverMarker = null;
+let assignedDriverId = null;
 
 function loadNearbyDrivers() {
 
@@ -199,6 +201,45 @@ function loadNearbyDrivers() {
 
 // Refresh every 5 seconds
 setInterval(loadNearbyDrivers, 5000);
+
+function startDriverTracking(driverId) {
+
+    assignedDriverId = driverId;
+
+    setInterval(fetchDriverLocation, 3000);
+}
+
+function fetchDriverLocation() {
+
+    if (!assignedDriverId) return;
+
+    fetch(`http://192.168.29.7:8080/driver/${assignedDriverId}/location`)
+        .then(res => res.json())
+        .then(driver => {
+
+            const lat = driver.currentLatitude;
+            const lng = driver.currentLongitude;
+
+            if (!lat || !lng) return;
+
+            // FIRST TIME create marker
+            if (!assignedDriverMarker) {
+
+                assignedDriverMarker = L.marker([lat, lng])
+                    .addTo(map)
+                    .bindPopup("Your Driver");
+
+            } 
+            // AFTER THAT just move marker
+            else {
+
+                assignedDriverMarker.setLatLng([lat, lng]);
+
+            }
+
+        })
+        .catch(err => console.error("Driver tracking error:", err));
+}
 
 </script>
 
