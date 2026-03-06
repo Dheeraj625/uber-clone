@@ -64,8 +64,6 @@
 
 </div>
 
-<script src="/js/rider.js"></script>
-
 <script>
 function logout(){
     localStorage.clear();
@@ -213,7 +211,7 @@ function fetchDriverLocation() {
 
     if (!assignedDriverId) return;
 
-    fetch(`http://192.168.29.7:8080/driver/${assignedDriverId}/location`)
+    fetch(`http://10.50.21.250:8080/driver/${assignedDriverId}/location`)
         .then(res => res.json())
         .then(driver => {
 
@@ -242,6 +240,8 @@ function fetchDriverLocation() {
 }
 
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="/js/rider.js"></script>
 </body>
 </html>

@@ -1,10 +1,12 @@
 //const BASE_URL = "http://localhost:8080";
-const BASE_URL = "http://192.168.29.7:8080";
-//const BASE_URL = "http://10.50.21.250:8080";
+//const BASE_URL = "http://192.168.29.7:8080";
+const BASE_URL = "http://10.50.21.250:8080";
 
 const driverId = localStorage.getItem("driverId");
 let trackingInterval = null;
 console.log("Driver ID:", driverId);
+let stompClient = null;
+//let driverId = null;
 
 // Go Online / Offline
 function setAvailable(status) {
@@ -50,6 +52,7 @@ function updateLocation() {
     .catch(err => console.error(err));
 }
 function startTracking() {
+    connectWebSocket();
     if (!navigator.geolocation) {
         alert("Geolocation not supported");
         return;
@@ -96,5 +99,34 @@ function startTracking() {
             maximumAge: 0,
             timeout: 5000
         }
+    );
+}
+
+function connectWebSocket() {
+
+    const socket = new SockJS("http://localhost:8080/ws/location");
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function(frame) {
+        console.log("Connected to WebSocket");
+    });
+}
+function sendLocation(lat, lng) {
+
+    if (!stompClient || !stompClient.connected) {
+        console.log("WebSocket not connected");
+        return;
+    }
+
+    const message = {
+        driverId: driverId,
+        latitude: lat,
+        longitude: lng
+    };
+
+    stompClient.send(
+        "/app/driver/location",
+        {},
+        JSON.stringify(message)
     );
 }

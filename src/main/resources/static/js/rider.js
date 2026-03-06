@@ -1,10 +1,12 @@
 console.log("RIDER JS LOADED");
 //const BASE_URL = "http://localhost:8080";
-const BASE_URL = "http://192.168.29.7:8080";
-//const BASE_URL = "http://10.50.21.250:8080";
+//const BASE_URL = "http://192.168.29.7:8080";
+const BASE_URL = "http://10.50.21.250:8080";
 
 let currentRideId = null;
 let ridePollingInterval = null;
+let stompClient = null;
+let driverMarker = null;
 
 function requestRide() {
     document.getElementById("loadingSpinner").style.display = "block";
@@ -139,4 +141,47 @@ function cancelRide() {
         currentRideId = null;
     })
     .catch(err => console.error("Cancel failed:", err));
+}
+//day 17
+function startDriverTracking(driverId) {
+
+    console.log("Starting driver tracking for driver:", driverId);
+
+    const socket = new SockJS(`${BASE_URL}/ws/location`);
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function(frame) {
+
+        console.log("WebSocket connected:", frame);
+
+        stompClient.subscribe("/topic/driver/location", function(message) {
+
+            const location = JSON.parse(message.body);
+
+            console.log("Driver location received:", location);
+
+            updateDriverMarker(location.latitude, location.longitude);
+        });
+
+    });
+}
+
+function updateDriverMarker(lat, lng) {
+
+    console.log("Updating driver marker:", lat, lng);
+
+    if (!window.map) {
+        console.error("Map not initialized yet");
+        return;
+    }
+
+    if (!driverMarker) {
+
+        driverMarker = L.marker([lat, lng]).addTo(window.map);
+
+    } else {
+
+        driverMarker.setLatLng([lat, lng]);
+
+    }
 }
