@@ -3,10 +3,12 @@ package com.uber.uber_clone.controller;
 import com.uber.uber_clone.dto.RideRequestDTO;
 import com.uber.uber_clone.dto.RideResponseDTO;
 import com.uber.uber_clone.entity.Ride;
+import com.uber.uber_clone.service.RedisGeoService;
 import com.uber.uber_clone.service.RideService;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -61,5 +63,16 @@ public class RideController {
     public RideResponseDTO getRide(@PathVariable Long rideId) {
         Ride ride = rideService.getRideById(rideId);
         return rideService.convertToDTO(ride);
+    }
+
+    //day 19 testing 
+    @Autowired
+    private RedisGeoService redisGeoService;
+    @GetMapping("/test-nearby")
+    public List<String> testNearbyDrivers(
+        @RequestParam double lat,
+        @RequestParam double lon
+    ) {
+    return redisGeoService.findNearbyDrivers(lat, lon, 3);
     }
 }

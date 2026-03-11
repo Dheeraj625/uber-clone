@@ -1,6 +1,6 @@
 //const BASE_URL = "http://localhost:8080";
 //const BASE_URL = "http://192.168.29.7:8080";
-const BASE_URL = "http://10.50.21.250:8080";
+const BASE_URL = "http://10.92.217.250:8080";
 
 function login() {
     localStorage.clear();

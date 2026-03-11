@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import java.util.List;
+import com.uber.uber_clone.service.RedisGeoService;
 
 
 @Service
@@ -29,6 +30,10 @@ public class RideService {
     private final RideRepository rideRepository;
     private final DriverRepository driverRepository;
     private final UserRepository userRepository;
+
+    //day 19
+    @Autowired
+    private RedisGeoService redisGeoService;
 
     public RideService(RideRepository rideRepository,
                        DriverRepository driverRepository,
