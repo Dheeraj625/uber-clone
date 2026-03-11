@@ -1,6 +1,6 @@
 //const BASE_URL = "http://localhost:8080";
 //const BASE_URL = "http://192.168.29.7:8080";
-const BASE_URL = "http://10.50.21.250:8080";
+const BASE_URL = "http://10.92.217.250:8080";
 
 const driverId = localStorage.getItem("driverId");
 let trackingInterval = null;
@@ -72,7 +72,7 @@ function startTracking() {
             console.log("Live Location:", latitude, longitude);
 
             const driverId = localStorage.getItem("driverId");
-
+/*
             fetch(`http://localhost:8080/driver/${driverId}/location`, {
                 method: "PUT",
                 headers: {
@@ -89,7 +89,21 @@ function startTracking() {
             .then(data => {
                 console.log("Location updated in backend");
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error(err));*/
+            const message = {
+                driverId: Number(driverId),
+                latitude: latitude,
+                longitude: longitude
+            };
+
+            console.log("Sending via WebSocket:", message);
+
+            stompClient.send(
+                "/app/driver/location",
+                {},
+                JSON.stringify(message)
+            );
+
         },
         function(error) {
             console.error("Location error:", error);

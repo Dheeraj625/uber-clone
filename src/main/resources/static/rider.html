@@ -174,7 +174,7 @@ function loadNearbyDrivers() {
 
     if (!lat || !lng) return;
 
-    fetch(`http://localhost:8080/driver/nearby?lat=${lat}&lng=${lng}&radiusKm=15`)
+    fetch(`${BASE_URL}/driver/nearby?lat=${lat}&lng=${lng}&radiusKm=15`)
         .then(res => res.json())
         .then(drivers => {
 
@@ -211,7 +211,7 @@ function fetchDriverLocation() {
 
     if (!assignedDriverId) return;
 
-    fetch(`http://10.50.21.250:8080/driver/${assignedDriverId}/location`)
+    fetch(`${BASE_URL}/driver/${assignedDriverId}/location`)
         .then(res => res.json())
         .then(driver => {
 
